@@ -2,11 +2,18 @@ from basketball_reference_web_scraper import client
 from basketball_reference_web_scraper.data import League
 from basketball_reference_web_scraper.data import OutputType
 from basketball_reference_web_scraper.data import Team
+from datetime import datetime, timedelta
 
 # year = input("year: ")
 # month = input("month: ")
 # day = input("day: ")
 
+
+
+def player_points_year_to_date(player):
+    null
+
+# gets the number of points a given player has scored on a given day, month, and year
 def day_points(player, month, day, year):
     list = client.player_box_scores(day=day, month=month, year=year)
     for i in list:
@@ -15,6 +22,7 @@ def day_points(player, month, day, year):
                                      i["made_three_point_field_goals"], 
                                      i["made_free_throws"])
 
+# converts the stats of a player in a game into points
 def convert_to_points(field_goals, threes, ft):
     return ((field_goals-threes) * 2) + (threes * 3) + ft
 
@@ -25,7 +33,7 @@ def full_season_points(player, year):
         if i['name'] == player:
             return i['points']
         
-print(client.season_schedule(season_end_year=2018))
+print(client.search(term="Ko"))
 print(day_points("LeBron James", 3, 8, 2025))
 
 # for i in list:
