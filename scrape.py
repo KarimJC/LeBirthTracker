@@ -2,7 +2,7 @@ from basketball_reference_web_scraper import client
 from basketball_reference_web_scraper.data import League
 from basketball_reference_web_scraper.data import OutputType
 from basketball_reference_web_scraper.data import Team
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 
 # year = input("year: ")
 # month = input("month: ")
@@ -13,14 +13,31 @@ from datetime import datetime, timedelta
 def player_points_year_to_date(player):
     null
 
-# gets the number of points a given player has scored on a given day, month, and year
-def day_points(player, month, day, year):
-    list = client.player_box_scores(day=day, month=month, year=year)
-    for i in list:
-        if player == i['name']:
-            return convert_to_points(i["made_field_goals"], 
-                                     i["made_three_point_field_goals"], 
-                                     i["made_free_throws"])
+# gets the number of points a given player has scored on a given date
+def player_day_points(player, date):
+    list = client.player_box_scores(day=date.day, month=date.month, year=date.year)
+
+    # TODO: rework the loop so that the loop ends when the player's name is found
+    # for i in list:
+    #     if player == i['name']:
+    #         return convert_to_points(i["made_field_goals"], 
+    #                                  i["made_three_point_field_goals"], 
+    #                                  i["made_free_throws"])
+    index = list.index(player)
+    return convert_to_points(list[index]["made_field_goals"], 
+                    list[index]["made_three_point_field_goals"], 
+                    list[index]["made_free_throws"])
+
+# gets the total amount of points a player hsa scored between two dates (inclusive)
+# takes in a player (string), a start date and an end date
+def player_points_between_dates(player, start_date, end_date):
+    current_date = start_date
+    total_points = 0
+    while(current_date <= end_date):
+        total_points += player_day_points(player=player, date=current_date)
+        current_date += timedelta(days=1)
+    
+    return total_points
 
 # converts the stats of a player in a game into points
 def convert_to_points(field_goals, threes, ft):
@@ -33,8 +50,9 @@ def full_season_points(player, year):
         if i['name'] == player:
             return i['points']
         
-print(client.search(term="Ko"))
-print(day_points("LeBron James", 3, 8, 2025))
+
+#print(client.search(term="Ko"))
+print(player_points_between_dates("LeBron James", date(2025, 4, 22), date(2025, 4, 27)))
 
 # for i in list:
 #     if i['name'] == "LeBron James":
