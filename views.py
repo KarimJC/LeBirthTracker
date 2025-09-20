@@ -1,7 +1,9 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, Blueprint
 from datetime import datetime
 
 app = Flask(__name__)
+
+bp = Blueprint("home", __name__, url_prefix="/")
 
 @app.route("/")
 def home():
