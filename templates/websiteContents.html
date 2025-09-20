@@ -1,15 +1,406 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LeBirthTracker - King James Points Calculator</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            max-width: 500px;
+            width: 100%;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #ff6b6b, #4ecdc4, #45b7d1, #96ceb4, #feca57);
+        }
+
+        .logo {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .crown {
+            color: #f39c12;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 20%, 50%, 80%, 100% { transform: translateY(0); }
+            40% { transform: translateY(-10px); }
+            60% { transform: translateY(-5px); }
+        }
+
+        .subtitle {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+            margin-bottom: 30px;
+            line-height: 1.6;
+        }
+
+        .form-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 2px solid #e9ecef;
+            transition: all 0.3s ease;
+        }
+
+        .form-container:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+        }
+
+        .form-group {
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .form-label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            font-size: 1rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .submit-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        .submit-btn:active {
+            transform: translateY(0);
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .result-container {
+            display: none;
+            background: linear-gradient(135deg, #4ecdc4 0%, #44a08d 100%);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 20px;
+            animation: slideIn 0.5s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .points-display {
+            font-size: 3rem;
+            font-weight: 700;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        }
+
+        .result-description {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            line-height: 1.6;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #667eea;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 15px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .error-message {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .logo {
+                font-size: 2rem;
+            }
+            
+            .points-display {
+                font-size: 2.5rem;
+            }
+        }
+    </style>
+</head>
 <body>
+    <div class="container">
+        <div class="logo">
+            <i class="fas fa-crown crown"></i>
+            LeBirthTracker
+        </div>
+        <p class="subtitle">Discover how many points King James scored before your birthday and see if you can beat his legendary stats!</p>
+        
+        <div class="form-container">
+            <form id="birthdayForm" action="/submit" method="post">
+                <div class="form-group">
+                    <label for="birthday" class="form-label">
+                        <i class="fas fa-calendar-alt"></i> Your Birthday
+                    </label>
+                    <input type="date" id="birthday" name="birthday" class="form-input" required>
+                </div>
+                <button type="submit" class="submit-btn">
+                    <i class="fas fa-basketball-ball"></i> Calculate King's Points
+                </button>
+            </form>
+        </div>
 
-<h1>LeBirthTracker!!!!!</h1>
-<p>See how many points your glorious king scored before your birthday.</p>
-<form action="/submit", method="post">
-    <label for="birthday">Birthday:</label>
-    <input type="date" id="birthday" name="birthday">
-    <input type="submit">
-  </form>
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Calculating King James' points...</p>
+        </div>
 
+        <div class="result-container" id="resultContainer">
+            <div class="result-title">🏆 Your King James Stats</div>
+            <div class="points-display" id="pointsDisplay">0</div>
+            <div class="result-description" id="resultDescription">
+                LeBron James scored <span id="totalPoints">0</span> points before your birthday!
+            </div>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <span class="stat-value" id="gamesPlayed">0</span>
+                    <span class="stat-label">Games</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="avgPoints">0.0</span>
+                    <span class="stat-label">Avg PPG</span>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="yearsActive">0</span>
+                    <span class="stat-label">Years</span>
+                </div>
+            </div>
+        </div>
 
+        <div class="error-message" id="errorMessage">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span id="errorText">Something went wrong. Please try again.</span>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('birthdayForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const birthday = document.getElementById('birthday').value;
+            if (!birthday) {
+                showError('Please select your birthday');
+                return;
+            }
+
+            const birthdayDate = new Date(birthday);
+            const today = new Date();
+            
+            if (birthdayDate > today) {
+                showError('Please select a date in the past');
+                return;
+            }
+
+            showLoading();
+            
+            // Submit the form
+            fetch('/submit', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                body: `birthday=${birthday}`
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                hideLoading();
+                displayResults(data);
+            })
+            .catch(error => {
+                hideLoading();
+                showError(error.error || 'Failed to calculate points. Please try again.');
+                console.error('Error:', error);
+            });
+        });
+
+        function showLoading() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('resultContainer').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        function showError(message) {
+            document.getElementById('errorText').textContent = message;
+            document.getElementById('errorMessage').style.display = 'block';
+            document.getElementById('resultContainer').style.display = 'none';
+        }
+
+        function displayResults(data) {
+            // Display the results from the backend
+            document.getElementById('pointsDisplay').textContent = data.total_points.toLocaleString();
+            document.getElementById('totalPoints').textContent = data.total_points.toLocaleString();
+            document.getElementById('gamesPlayed').textContent = data.games_played;
+            document.getElementById('avgPoints').textContent = data.avg_points;
+            document.getElementById('yearsActive').textContent = data.years_active;
+            
+            // Update the description with the message from the backend
+            document.getElementById('resultDescription').textContent = data.message;
+            
+            document.getElementById('resultContainer').style.display = 'block';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        // Set max date to today
+        document.getElementById('birthday').max = new Date().toISOString().split('T')[0];
+    </script>
 </body>
 </html> 
